@@ -1,1 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NexusPlay — Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+  /* ── CSS VARIABLES ── */
+  :root {
+    --accent: #00ffe7;
+    --accent2: #ff2d78;
+    --bg: #09090f;
+    --surface: #0f0f1a;
+    --surface2: #161625;
+    --border: rgba(0,255,231,0.18);
+    --text: #e8e8ff;
+    --text-muted: #7a7a9d;
+    --glow: 0 0 18px rgba(0,255,231,0.45);
+    --radius: 14px;
+    --transition: 0.3s cubic-bezier(.4,0,.2,1);
+  }
+  [data-theme="light"] {
+    --bg: #f0f2ff;
+    --surface: #ffffff;
+    --surface2: #e8eaf6;
+    --border: rgba(100,80,255,0.22);
+    --text: #1a1a2e;
+    --text-muted: #6464a0;
+    --accent: #5c3bff;
+    --accent2: #ff2d78;
+    --glow: 0 0 18px rgba(92,59,255,0.3);
+  }
+  [data-theme="neon"] {
+    --bg: #0a001a;
+    --surface: #110022;
+    --surface2: #1a003a;
+    --border: rgba(200,0,255,0.25);
+    --text: #f0e0ff;
+    --text-muted: #9966cc;
+    --accent: #dd00ff;
+    --accent2: #ffaa00;
+    --glow: 0 0 22px rgba(220,0,255,0.55);
+  }
+  [data-theme="fire"] {
+    --bg: #100500;
+    --surface: #1a0800;
+    --surface2: #261200;
+    --border: rgba(255,80,0,0.25);
+    --text: #fff0e0;
+    --text-muted: #cc8844;
+    --accent: #ff6a00;
+    --accent2: #ffcc00;
+    --glow: 0 0 20px rgba(255,106,0,0.5);
+  }
 
+  /* ── RESET ── */
+  *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: background var(--transition), color var(--transition);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── ANIMATED GRID BG ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridPulse 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes gridPulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── THEME BAR ── */
+  .theme-bar {
+    position: fixed; top: 16px; right: 16px; z-index: 100;
+    display: flex; gap: 8px; align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 6px 10px;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--glow);
+  }
+  .theme-bar span { font-size: .7rem; letter-spacing:.1em; color: var(--text-muted); font-family:'Orbitron',sans-serif; margin-right:4px; }
+  .t-btn {
+    width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent;
+    cursor: pointer; transition: transform .2s, border-color .2s;
+    position: relative;
+  }
+  .t-btn:hover { transform: scale(1.25); }
+  .t-btn.active { border-color: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .t-btn[data-t="dark"]  { background: #09090f; }
+  .t-btn[data-t="light"] { background: linear-gradient(135deg,#f0f2ff,#c7c9ff); }
+  .t-btn[data-t="neon"]  { background: linear-gradient(135deg,#0a001a,#dd00ff); }
+  .t-btn[data-t="fire"]  { background: linear-gradient(135deg,#100500,#ff6a00); }
+
+  /* ── CARD ── */
+  .card {
+    position: relative; z-index: 10;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 44px 42px 40px;
+    width: 100%; max-width: 520px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.6), var(--glow);
+    animation: slideUp .6s cubic-bezier(.4,0,.2,1) both;
+    transition: background var(--transition), box-shadow var(--transition);
+  }
+  @keyframes slideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── LOGO ── */
+  .logo {
+    text-align: center; margin-bottom: 6px;
+  }
+  .logo-icon {
+    font-size: 2.4rem; display: inline-block;
+    animation: spinIcon 4s linear infinite;
+  }
+  @keyframes spinIcon { 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(8deg)} }
+  .logo h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.7rem; font-weight: 900;
+    letter-spacing: .12em;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: none;
+  }
+  .logo p { font-size: .82rem; color: var(--text-muted); letter-spacing:.08em; margin-top:2px; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 20px 0 18px;
+    font-size: .75rem; color: var(--text-muted); letter-spacing:.1em;
+  }
+  .divider::before, .divider::after {
+    content:''; flex:1; height:1px; background: var(--border);
+  }
+
+  /* ── FORM GRID ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .full { grid-column: 1/-1; }
+
+  /* ── FIELD ── */
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: .72rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); font-family:'Orbitron',sans-serif;
+  }
+  .field-wrap { position: relative; }
+  .field-wrap .icon {
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    font-size:1rem; pointer-events:none;
+  }
+  input, select {
+    width:100%; background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text); font-family:'Rajdhani',sans-serif; font-size:.95rem;
+    padding: 11px 14px 11px 38px;
+    outline: none;
+    transition: border-color .25s, box-shadow .25s, background .25s;
+  }
+  input::placeholder { color: var(--text-muted); }
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: var(--glow), 0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent);
+    background: var(--surface);
+  }
+  select { appearance: none; cursor:pointer; }
+  select option { background: var(--surface2); color: var(--text); }
+
+  /* ── PASSWORD TOGGLE ── */
+  .eye-btn {
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    background:none; border:none; cursor:pointer; color:var(--text-muted);
+    font-size:1.1rem; padding:4px; transition:color .2s;
+  }
+  .eye-btn:hover { color:var(--accent); }
+  .pass-input { padding-right: 40px !important; }
+
+  /* ── SOCIAL IDs ── */
+  .social-section h3 {
+    font-family:'Orbitron',sans-serif; font-size:.72rem;
+    letter-spacing:.1em; color:var(--accent); margin-bottom:10px;
+    text-transform:uppercase;
+  }
+  .social-grid { display:flex; flex-wrap:wrap; gap:8px; }
+  .social-chip {
+    display:flex; align-items:center; gap:7px;
+    background: var(--surface2); border:1.5px solid var(--border);
+    border-radius: 30px; padding: 7px 14px; cursor:pointer;
+    font-size:.82rem; font-family:'Rajdhani',sans-serif; font-weight:600;
+    letter-spacing:.04em; transition: all .25s; user-select:none;
+    color: var(--text-muted);
+  }
+  .social-chip:hover { border-color:var(--accent); color:var(--text); transform:translateY(-2px); }
+  .social-chip.selected {
+    border-color:var(--accent); color:var(--accent);
+    background: color-mix(in srgb,var(--accent) 10%,var(--surface2));
+    box-shadow: 0 0 10px color-mix(in srgb,var(--accent) 30%,transparent);
+  }
+  .social-chip .s-icon { font-size:1rem; }
+
+  /* ── CHECKBOX ── */
+  .check-row { display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .check-row input[type=checkbox] {
+    width:17px; height:17px; padding:0; accent-color:var(--accent);
+    border-radius:4px; cursor:pointer;
+  }
+  .check-row span { font-size:.83rem; color:var(--text-muted); }
+  .check-row a { color:var(--accent); text-decoration:none; }
+  .check-row a:hover { text-decoration:underline; }
+
+  /* ── SUBMIT BTN ── */
+  .submit-btn {
+    width:100%; padding:14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border:none; border-radius:12px; cursor:pointer;
+    font-family:'Orbitron',sans-serif; font-size:.9rem; font-weight:700;
+    letter-spacing:.12em; color:#000; text-transform:uppercase;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+    position:relative; overflow:hidden;
+    box-shadow: 0 4px 24px color-mix(in srgb,var(--accent) 40%,transparent);
+  }
+  .submit-btn::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
+    opacity:0; transition:opacity .2s;
+  }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 32px color-mix(in srgb,var(--accent) 55%,transparent); }
+  .submit-btn:hover::after { opacity:1; }
+  .submit-btn:active { transform:translateY(0); }
+  .submit-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+  /* ── SUCCESS TOAST ── */
+  .toast {
+    position:fixed; bottom:28px; right:28px; z-index:999;
+    background:var(--surface); border:1px solid var(--accent);
+    border-radius:14px; padding:14px 22px;
+    font-size:.9rem; color:var(--text); display:flex; align-items:center; gap:10px;
+    box-shadow: var(--glow);
+    transform:translateY(80px); opacity:0; pointer-events:none;
+    transition: transform .4s cubic-bezier(.4,0,.2,1), opacity .4s;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+
+  /* ── SIGN IN LINK ── */
+  .signin-link { text-align:center; font-size:.83rem; color:var(--text-muted); }
+  .signin-link a { color:var(--accent); text-decoration:none; font-weight:700; }
+  .signin-link a:hover { text-decoration:underline; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:480px){
+    .card { padding:30px 22px; }
+    .form-grid { grid-template-columns:1fr; }
+    .full { grid-column:1; }
+    .theme-bar { top:10px; right:10px; padding:4px 8px; }
+    .t-btn { width:20px; height:20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Theme selector -->
+<div class="theme-bar">
+  <span>THEME</span>
+  <button class="t-btn active" data-t="dark" title="Dark" onclick="setTheme('dark',this)"></button>
+  <button class="t-btn" data-t="light" title="Light" onclick="setTheme('light',this)"></button>
+  <button class="t-btn" data-t="neon" title="Neon" onclick="setTheme('neon',this)"></button>
+  <button class="t-btn" data-t="fire" title="Fire" onclick="setTheme('fire',this)"></button>
+</div>
+
+<div class="card" id="mainCard">
+
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-icon">🎮</div>
+    <h1>NEXUSPLAY</h1>
+    <p>CREATE YOUR ACCOUNT</p>
+  </div>
+
+  <div class="divider">PLAYER REGISTRATION</div>
+
+  <form id="regForm" novalidate>
+    <div class="form-grid">
+
+      <!-- Full Name -->
+      <div class="field">
+        <label>Full Name</label>
+        <div class="field-wrap">
+          <span class="icon">👤</span>
+          <input type="text" id="fullname" placeholder="Your real name" required autocomplete="name"/>
+        </div>
+      </div>
+
+      <!-- Gaming ID / Username -->
+      <div class="field">
+        <label>Gaming ID / Tag</label>
+        <div class="field-wrap">
+          <span class="icon">🕹️</span>
+          <input type="text" id="gamingid" placeholder="e.g. DragonSlayer99" required autocomplete="off"/>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="field full">
+        <label>Email Address</label>
+        <div class="field-wrap">
+          <span class="icon">✉️</span>
+          <input type="email" id="email" placeholder="you@email.com" required autocomplete="email"/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label>Password</label>
+        <div class="field-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="password" class="pass-input" placeholder="Min. 8 characters" required/>
+          <button type="button" class="eye-btn" onclick="togglePass('password',this)">👁️</button>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="field">
+        <label>Confirm Password</label>
+        <div class="field-wrap">
+          <span class="icon">🔑</span>
+          <input type="password" id="confirm" class="pass-input" placeholder="Repeat password" required/>
+          <button type="button" class="eye-btn" onclick="togglePass('confirm',this)">👁️</button>
+        </div>
+      </div>
+
+      <!-- Birthdate -->
+      <div class="field">
+        <label>Date of Birth</label>
+        <div class="field-wrap">
+          <span class="icon">🎂</span>
+          <input type="date" id="dob" required/>
+        </div>
+      </div>
+
+      <!-- Game Genre -->
+      <div class="field">
+        <label>Favourite Genre</label>
+        <div class="field-wrap">
+          <span class="icon">🏆</span>
+          <select id="genre">
+            <option value="">Select genre…</option>
+            <option>FPS / Shooter</option>
+            <option>Battle Royale</option>
+            <option>RPG / Fantasy</option>
+            <option>MOBA / Strategy</option>
+            <option>Sports / Racing</option>
+            <option>Simulation</option>
+            <option>Horror / Survival</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Region -->
+      <div class="field full">
+        <label>Region / Server</label>
+        <div class="field-wrap">
+          <span class="icon">🌐</span>
+          <select id="region">
+            <option value="">Select region…</option>
+            <option>North America</option>
+            <option>Europe</option>
+            <option>Asia Pacific</option>
+            <option>South America</option>
+            <option>Middle East & Africa</option>
+          </select>
+        </div>
+      </div>
+
+    </div><!-- /form-grid -->
+
+    <!-- Social IDs -->
+    <div class="divider" style="margin-top:22px;">LINK SOCIAL ACCOUNTS</div>
+    <div class="social-section">
+      <h3>Select your social platforms (optional)</h3>
+      <div class="social-grid" id="socialGrid">
+        <div class="social-chip" data-id="discord"    onclick="toggleSocial(this)"><span class="s-icon">💬</span> Discord</div>
+        <div class="social-chip" data-id="twitch"     onclick="toggleSocial(this)"><span class="s-icon">🟣</span> Twitch</div>
+        <div class="social-chip" data-id="youtube"    onclick="toggleSocial(this)"><span class="s-icon">▶️</span> YouTube</div>
+        <div class="social-chip" data-id="steam"      onclick="toggleSocial(this)"><span class="s-icon">🎮</span> Steam</div>
+        <div class="social-chip" data-id="xbox"       onclick="toggleSocial(this)"><span class="s-icon">🟢</span> Xbox Live</div>
+        <div class="social-chip" data-id="psn"        onclick="toggleSocial(this)"><span class="s-icon">🔵</span> PSN</div>
+        <div class="social-chip" data-id="twitter"    onclick="toggleSocial(this)"><span class="s-icon">🐦</span> Twitter/X</div>
+        <div class="social-chip" data-id="instagram"  onclick="toggleSocial(this)"><span class="s-icon">📸</span> Instagram</div>
+        <div class="social-chip" data-id="tiktok"     onclick="toggleSocial(this)"><span class="s-icon">🎵</span> TikTok</div>
+        <div class="social-chip" data-id="reddit"     onclick="toggleSocial(this)"><span class="s-icon">🤖</span> Reddit</div>
+      </div>
+    </div>
+
+    <div class="divider" style="margin-top:22px;"></div>
+
+    <!-- Terms -->
+    <label class="check-row" style="margin-bottom:14px">
+      <input type="checkbox" id="terms" required/>
+      <span>I agree to the <a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a></span>
+    </label>
+
+    <!-- Newsletter -->
+    <label class="check-row" style="margin-bottom:22px">
+      <input type="checkbox" id="newsletter"/>
+      <span>Send me gaming news and exclusive offers</span>
+    </label>
+
+    <button class="submit-btn" type="submit" id="submitBtn">
+      ⚡ CREATE MY ACCOUNT
+    </button>
+  </form>
+
+  <div class="signin-link" style="margin-top:18px;">
+    Already a player? <a href="#">Sign In →</a>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span>✅</span> <span id="toastMsg">Registration submitted!</span>
+</div>
+
+<script>
+  /* ── THEME ── */
+  function setTheme(t, btn) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.querySelectorAll('.t-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  /* ── SOCIAL CHIP TOGGLE ── */
+  function toggleSocial(el) {
+    el.classList.toggle('selected');
+  }
+
+  /* ── PASSWORD VISIBILITY ── */
+  function togglePass(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+  }
+
+  /* ── TOAST ── */
+  function showToast(msg, duration=4000) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
+  }
+
+  /* ── FORM SUBMIT ── */
+  document.getElementById('regForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name    = document.getElementById('fullname').value.trim();
+    const gameid  = document.getElementById('gamingid').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const pass    = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm').value;
+    const dob     = document.getElementById('dob').value;
+    const terms   = document.getElementById('terms').checked;
+
+    if (!name)    return showToast('⚠️ Please enter your full name.');
+    if (!gameid)  return showToast('⚠️ Please enter your Gaming ID.');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                  return showToast('⚠️ Enter a valid email address.');
+    if (pass.length < 8) return showToast('⚠️ Password must be at least 8 characters.');
+    if (pass !== confirm) return showToast('⚠️ Passwords do not match.');
+    if (!dob)     return showToast('⚠️ Please enter your date of birth.');
+    if (!terms)   return showToast('⚠️ You must agree to the Terms of Service.');
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ CREATING ACCOUNT…';
+
+    const socials = [...document.querySelectorAll('.social-chip.selected')].map(c => c.dataset.id);
+
+    // Simulate API / email submission
+    setTimeout(() => {
+      btn.textContent = '✅ ACCOUNT CREATED!';
+      showToast(`🎮 Welcome, ${gameid}! Confirmation sent to ${email}`, 5000);
+      // Log payload
+      console.log({
+        name, gameid, email, dob,
+        genre: document.getElementById('genre').value,
+        region: document.getElementById('region').value,
+        socials,
+        newsletter: document.getElementById('newsletter').checked,
+        sentTo: 'cocfan09876@gmail.com'
+      });
+    }, 1800);
+  });
+</script>
+</body>
+  </html>
+  
